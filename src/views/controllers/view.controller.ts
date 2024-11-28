@@ -11,18 +11,18 @@ export class ViewController {
   }
 
   @Get('login')
-  @Render('login') // signup.hbs 템플릿 렌더링
+  @Render('login')
   showSignupForm() {}
 
   @Get('discover')
-  @Render('discover') // discover.hbs 템플릿 렌더링
+  @Render('discover')
   showDiscoverPage() {}
 
   @Get('me')
-  @Render('my-page') // my.hbs 템플릿 렌더링
+  @Render('my-page')
   showMyPage() {}
 
   @Get('create')
-  @Render('create-event') // create-event.hbs 템플릿 렌더링
+  @Render('create-event')
   showCreateEventPage() {}
 }
