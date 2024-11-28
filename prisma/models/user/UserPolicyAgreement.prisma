@@ -1,0 +1,14 @@
+model UserPolicyAgreement {
+  id        String   @id @default(cuid())
+  agreedAt  DateTime @default(now()) @db.Timestamp(6)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  policy     Policy @relation(fields: [policyType], references: [type], onDelete: Cascade)
+  policyType String
+
+  @@unique([userId, policyType])
+}

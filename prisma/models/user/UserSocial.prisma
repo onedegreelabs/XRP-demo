@@ -1,0 +1,13 @@
+model UserSocial {
+  id        String     @id @default(cuid())
+  type      SocialType
+  url       String
+  position  BigInt
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([userId, type])
+}

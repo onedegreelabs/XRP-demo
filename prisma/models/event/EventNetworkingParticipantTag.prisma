@@ -1,0 +1,12 @@
+model EventNetworkingParticipantTag {
+  position BigInt
+
+  networkingParticipant   EventNetworkingParticipant @relation(fields: [networkingParticipantId], references: [id], onDelete: Cascade)
+  networkingParticipantId String
+
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId String
+
+  @@id([networkingParticipantId, tagId])
+  @@unique([networkingParticipantId, position])
+}

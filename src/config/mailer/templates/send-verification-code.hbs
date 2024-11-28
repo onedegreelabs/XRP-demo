@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification code</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <style>
+    body {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    }
+  </style>
+</head>
+<body>
+<table
+  border="0"
+  cellpadding="0"
+  cellspacing="0"
+  width="100%"
+  style="color: #191f28;"
+  class="wrapper"
+>
+  <tbody style="display: block; width: 100%;">
+  <tr width="100%" style="display: block">
+    <td width="100%" style="display: block">
+      <table
+        width="100%"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        bgcolor="#FFFFFF"
+        style="
+                display: inline-block;
+                text-align: left;
+                border-collapse: collapse;
+              "
+        class="container"
+      >
+        <tbody style="display: block; padding: 50px 20px">
+        <tr style="display: block; width: 100%; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e9e9e9;">
+          <td>
+            <img src={{logoUrl}} alt="Logo" style="height: 28px; width: auto">
+          </td>
+        </tr>
+        <tr style="display: block; width: 100%;">
+          <td style="font-size: 24px; font-weight: bold">Verification code</td>
+        </tr>
+        <tr width="100%" style="display: block; margin: 40px 0">
+          <td width="100%" style="display: block; letter-spacing: 2px; font-size: 32px; font-weight: bold">
+            {{code}}
+          </td>
+        </tr>
+        <tr style="display: block;">
+          <td style="display: block; color: #333D4B; font-size: 16px; line-height: 22px">
+            This code will expire {{expires}} minutes after this email was sent.<br />
+            If you didn’t attempt to sign in, you can safely ignore this email.
+          </td>
+          <td style="display: block; margin-top: 50px; color: #333D4B; font-size: 16px; line-height: 22px">
+            This message was automatically generated. Don't reply to this message.
+          </td>
+        </tr>
+        <tr
+          width="100%"
+          style="
+                    display: block;
+                    padding-top: 16px;
+                    margin-top: 24px;
+                    border-top: 1px solid #e9e9e9;
+                  "
+        >
+          <td style="display: block; color: #B0B8C1; font-size: 12px; line-height: 20px">
+            © 2024 One Degree Labs Co. All Rights Reserved
+          </td>
+          <td style="display: block; color: #B0B8C1; font-size: 12px; line-height: 20px">
+            Email: <a href="mailto:support@onedegreelabs.io" style="color: #B0B8C1;">support@onedegreelabs.io</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
+

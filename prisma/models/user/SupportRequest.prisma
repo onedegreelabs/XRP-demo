@@ -1,0 +1,27 @@
+model SupportRequest {
+  id        String               @id @default(cuid())
+  type      SupportRequestType
+  title     String
+  message   String
+  status    SupportRequestStatus @default(OPEN)
+  response  String?
+  createdAt DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt DateTime             @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String
+}
+
+enum SupportRequestType {
+  INQUIRY
+  BUG
+  SUGGESTION
+  FEEDBACK
+  OTHERS
+}
+
+enum SupportRequestStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}

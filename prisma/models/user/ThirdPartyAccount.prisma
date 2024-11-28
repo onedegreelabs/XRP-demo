@@ -1,0 +1,17 @@
+model ThirdPartyAccount {
+  id           String             @id @default(cuid())
+  provider     ThirdPartyProvider
+  providerId   String
+  accessToken  String
+  refreshToken String?
+  linkedAt     DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime           @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+}
+
+enum ThirdPartyProvider {
+  GOOGLE
+  APPLE
+}

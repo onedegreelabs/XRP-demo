@@ -1,0 +1,599 @@
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String           @id @default(cuid())
+  handle      String
+  field       String?
+  title       String?
+  description Json? // markdown JSON
+  coverImage  String?
+  virtualLink String? // ex) zoom link
+  views       Int              @default(0)
+  timezone    String?
+  startAt     DateTime?
+  endAt       DateTime?
+  visibility  EventVisibility?
+  createdAt   DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  deletedAt   DateTime?        @db.Timestamp(6)
+
+  location             EventLocation?
+  setting              EventSetting?
+  tickets              EventTicket[]
+  hosts                EventHost[]
+  participants         EventParticipant[]
+  participantLabels    EventParticipantLabel[]
+  participantCurations EventParticipantCuration[]
+}
+
+enum EventVisibility {
+  LISTED // Discovery 페이지에 노출
+  PUBLIC // 모든 사용자들이 접근 가능함.
+  PRIVATE // 공유(초대)된 사용자들만 접근 가능함.
+}
+
+model EventHost {
+  id               String                     @id @default(cuid())
+  email            String
+  accessLevel      EventHostAccessLevel
+  invitationStatus EventHostInvitationStatus?
+  listingEnabled   Boolean
+  createdAt        DateTime                   @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime                   @default(now()) @updatedAt @db.Timestamp(6)
+  invitedAt        DateTime?                  @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? // null이면 초대 응답대기중인 비회원 -> 응답하면 userId로 링크
+
+  @@unique([eventId, email]) // 이벤트 내에서 이메일은 유일해야 함.
+}
+
+enum EventHostInvitationStatus {
+  PENDING // 응답 대기중
+  ACCEPTED // 초대 수락됨 -> 이벤트 등록한 상태임
+  REJECTED // 초대 거절됨
+}
+
+enum EventHostAccessLevel {
+  OWNER // 이벤트 생성자
+  MANAGER // 이벤트 관리권한
+  NON_MANAGER // 이벤트 관리권한 없는 일반 참가자
+}
+
+// references: https://developers.google.com/maps/documentation/javascript/places
+model EventLocation {
+  id            String       @id @default(cuid())
+  placeId       String?
+  type          LocationType
+  country       String?
+  region        String? // 주(state) or 도(ex 경기도) or 대도시(특별시, 광역시)
+  city          String? // 주(state) or 도(ex 경기도)에 포함된 소도시
+  shortAddress  String? // 간단주소 (직접 or 자동입력) - manul 입력 시 저장되는 필드
+  fullAddress   String? // 전체주소 (자동입력)
+  detailAddress String? // 상세주소 (직접입력)
+  latitude      Float? //
+  longitude     Float?
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String @unique
+}
+
+model EventNetworkingParticipant {
+  id           String   @id @default(cuid())
+  bio          String?
+  organization String?
+  jobTitle     String?
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  participantId String           @unique
+
+  tags    EventNetworkingParticipantTag[]
+  socials EventNetworkingParticipantSocial[]
+}
+
+model EventNetworkingParticipantSocial {
+  id        String     @id @default(cuid())
+  type      SocialType
+  url       String
+  position  BigInt
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+
+  networkingParticipant   EventNetworkingParticipant @relation(fields: [networkingParticipantId], references: [id], onDelete: Cascade)
+  networkingParticipantId String
+
+  @@unique([networkingParticipantId, type])
+}
+
+model EventNetworkingParticipantTag {
+  position BigInt
+
+  networkingParticipant   EventNetworkingParticipant @relation(fields: [networkingParticipantId], references: [id], onDelete: Cascade)
+  networkingParticipantId String
+
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId String
+
+  @@id([networkingParticipantId, tagId])
+  @@unique([networkingParticipantId, position])
+}
+
+model EventParticipant {
+  id                  String                              @id @default(cuid())
+  email               String // 참가자 이메일 (초대 용도)
+  role                EventParticipantRole // 참가자 뱃지
+  accessLevel         EventParticipantAccessLevel
+  registerationStatus EventParticipantRegistrationStatus? // 아직 초대에 응답하지 않으면 null
+  invitationStatus    EventParticipantInvitationStatus? // 초대한 참가자가 아니면 null
+  createdAt           DateTime                            @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime                            @default(now()) @updatedAt @db.Timestamp(6)
+  registeredAt        DateTime?                           @db.Timestamp(6) // 등록한 시간 (Pending or Approved)
+  checkedInAt         DateTime?                           @db.Timestamp(6) // 체크인한 시간 (Checked In)
+  exitedAt            DateTime?                           @db.Timestamp(6) // 참가자가 이벤트에서 나간 시간 (Cancelled or Rejected)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? // null이면 초대 응답대기중인 비회원 -> 응답하면 userId로 링크
+
+  label   EventParticipantLabel? @relation(fields: [labelId], references: [id], onDelete: SetNull)
+  labelId String?
+
+  networkingParticipant EventNetworkingParticipant?
+  ticket                EventParticipantTicket?
+  curations             EventParticipantCuration[]  @relation("Curation") // 어떤 참가자를 큐레이팅 했는가?
+  curatedBy             EventParticipantCuration[]  @relation("CuratedBy") // 누구에 의해 큐레이팅 되었는가?
+
+  @@unique([eventId, userId, labelId])
+}
+
+enum EventParticipantRole {
+  HOST
+  GUEST
+  SPEAKER
+}
+
+enum EventParticipantAccessLevel {
+  NON_MEMBER // 비회원
+  ACCESS_LOUNGE // 라운지 접근 가능
+  ACCESS_NETWORKING // 네트워킹 접근 가능
+}
+
+enum EventParticipantRegistrationStatus {
+  WAITLIST // 대기자명단에 올라감
+  PENDING // 참가 신청 대기
+  APPROVED // 참가 승인됨
+  REJECTED // 참가 거절됨
+  CHECKED_IN // 체크인됨
+  CANCELLED // 참가 취소됨
+}
+
+enum EventParticipantInvitationStatus {
+  PENDING // 응답 대기중
+  ACCEPTED // 초대 수락됨 -> 이벤트 등록한 상태임
+  REJECTED // 초대 거절됨
+}
+
+model EventParticipantCuration {
+  id        String   @id @default(cuid())
+  comment   String?
+  score     Float?
+  curatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], name: "Curation", onDelete: Cascade)
+  participantId String
+
+  curatedParticipant   EventParticipant? @relation(fields: [curatedParticipantId], references: [id], name: "CuratedBy", onDelete: Cascade)
+  curatedParticipantId String?
+
+  @@unique([eventId, participantId, curatedParticipantId, curatedAt])
+}
+
+model EventParticipantLabel {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  participant EventParticipant[]
+
+  @@unique([eventId, name])
+}
+
+model EventParticipantTicket {
+  id        String            @id @default(cuid())
+  status    EventTicketStatus @default(ACTIVE)
+  issuedAt  DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  participantId String           @unique
+
+  // 호스트가 실수로 삭제할 수 있기 때문에 일단 남겨둠.
+  ticket   EventTicket @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId String
+
+  @@unique([participantId, ticketId])
+}
+
+enum EventTicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+model EventSetting {
+  id                   String  @id @default(cuid())
+  registrationEnabled  Boolean @default(true)
+  registrationCapacity Int
+  waitlistEnabled      Boolean @default(false)
+  waitlitistCapacity   Int     @default(-1) // -1 means unlimited
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String @unique
+}
+
+model EventTicket {
+  id               String          @id @default(cuid())
+  type             EventTicketType @default(FREE) // FREE 타입은 name, description 수정 불가
+  name             String          @default("Standard")
+  description      String?
+  price            Int             @default(0)
+  capacity         Int             @default(-1) // -1 means unlimited
+  approvalRequired Boolean
+  salesStartAt     DateTime
+  salesEndAt       DateTime
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  nfts         EventTicketNft[]
+  participants EventParticipantTicket[]
+}
+
+enum EventTicketType {
+  FREE
+}
+
+model EventTicketNft {
+  id        String               @id @default(cuid())
+  nftId     String               @unique
+  uri       String
+  status    EventTicketNftStatus @default(ACTIVE)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @default(now())
+
+  ticket   EventTicket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId String?
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+}
+
+enum EventTicketNftStatus {
+  ACTIVE
+  USED
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  type        CategoryType
+  position    BigInt
+  description String?
+  createdAt   DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+
+  parent   Category? @relation(fields: [parentId], references: [id], name: "CategoryToCategory", onDelete: Restrict)
+  parentId String?
+
+  children Category[] @relation("CategoryToCategory")
+
+  @@unique([type, position])
+}
+
+enum CategoryType {
+  EVENT_TYPE
+  EVENT_FIELD
+}
+
+enum LocationType {
+  MANUAL
+  GOOGLE
+}
+
+model Policy {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  required    Boolean
+  type        String   @unique
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp
+
+  users UserPolicyAgreement[]
+}
+
+enum SocialType {
+  LINKEDIN
+  INSTAGRAM
+  GITHUB
+  TWITTER
+  YOUTUBE
+  NOTION
+  BLOG
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  users                  UserTag[]
+  networkingParticipants EventNetworkingParticipantTag[]
+}
+
+model Auth {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  phone     String?
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+model DemoRequest {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  company   String
+  jobTitle  String
+  message   String
+  status    DemoRequestStatus @default(OPEN)
+  createdAt DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+}
+
+enum DemoRequestStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model Like {
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], name: "Like", onDelete: Cascade)
+  userId String
+
+  targetUser   User   @relation(fields: [targetUserId], references: [id], name: "LikedBy", onDelete: Cascade)
+  targetUserId String
+
+  @@id([userId, targetUserId])
+}
+
+model NonMemberAuth {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  authCode    String    @unique
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  convertedAt DateTime  @db.Timestamp(6)
+  expiredAt   DateTime? @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+model SupportRequest {
+  id        String               @id @default(cuid())
+  type      SupportRequestType
+  title     String
+  message   String
+  status    SupportRequestStatus @default(OPEN)
+  response  String?
+  createdAt DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt DateTime             @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String
+}
+
+enum SupportRequestType {
+  INQUIRY
+  BUG
+  SUGGESTION
+  FEEDBACK
+  OTHERS
+}
+
+enum SupportRequestStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model ThirdPartyAccount {
+  id           String             @id @default(cuid())
+  provider     ThirdPartyProvider
+  providerId   String
+  accessToken  String
+  refreshToken String?
+  linkedAt     DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime           @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+}
+
+enum ThirdPartyProvider {
+  GOOGLE
+  APPLE
+}
+
+model User {
+  id           String          @id @default(cuid())
+  name         String
+  handle       String          @unique
+  avatar       String?
+  bio          String?
+  organization String?
+  jobTitle     String?
+  accessLevel  UserAccessLevel @default(FREE)
+  role         UserRole        @default(MEMBER)
+  createdAt    DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime        @default(now()) @updatedAt @db.Timestamp(6)
+  deletedAt    DateTime?       @db.Timestamp(6)
+
+  auth               Auth?
+  nonMemberAuth      NonMemberAuth?
+  location           UserLocation?
+  socials            UserSocial[]
+  thirdPartyAccounts ThirdPartyAccount[]
+  devices            UserDevice[]
+  policyAgreements   UserPolicyAgreement[]
+  supportRequests    SupportRequest[]
+  tags               UserTag[]
+  likes              Like[]                @relation("Like")
+  likedBy            Like[]                @relation("LikedBy")
+  participants       EventParticipant[]
+  eventHosts         EventHost[]
+
+  // This is the relation field in the Wallet model
+  wallet          UserWallet?
+  eventTicketNfts EventTicketNft[]
+}
+
+enum UserAccessLevel {
+  FREE
+  PRO
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  NON_MEMBER
+}
+
+model UserDevice {
+  id             String     @id @default(cuid())
+  type           DeviceType
+  browserName    String? // Chrome, Safari, Firefox, etc.
+  browserVersion String? // 90.0.4430.93, 14.1, 88.0.4324.182, etc.
+  osName         String? // Windows, macOS, iOS, Android, etc.
+  osVersion      String? // 10, 11.2.3, 14.4.2, etc.
+  platform       String? // x86_64, ARM, etc.
+  ip             String // ipv4
+  region         String?
+
+  lastLoginAt DateTime? @default(now()) @db.Timestamp(6)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+  deletedAt   DateTime? @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([userId, ip])
+}
+
+enum DeviceType {
+  MOBILE
+  TABLET
+  DESKTOP
+}
+
+// references: https://developers.google.com/maps/documentation/javascript/places
+model UserLocation {
+  id           String       @id @default(cuid())
+  type         LocationType
+  country      String?
+  region       String? // 주(state) or 도(ex 경기도) or 대도시(특별시, 광역시)
+  city         String? // 주(state) or 도(ex 경기도)에 포함된 소도시
+  shortAddress String? // 간단주소 (직접 or 자동입력) - manul 입력 시 저장되는 필드
+  fullAddress  String? // 전체주소 (자동입력)
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+model UserPolicyAgreement {
+  id        String   @id @default(cuid())
+  agreedAt  DateTime @default(now()) @db.Timestamp(6)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  policy     Policy @relation(fields: [policyType], references: [type], onDelete: Cascade)
+  policyType String
+
+  @@unique([userId, policyType])
+}
+
+model UserSocial {
+  id        String     @id @default(cuid())
+  type      SocialType
+  url       String
+  position  BigInt
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([userId, type])
+}
+
+model UserTag {
+  position BigInt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId String
+
+  @@id([userId, tagId])
+  @@unique([userId, position])
+}
+
+model UserWallet {
+  id        String   @id @default(cuid())
+  address   String   @unique
+  seed      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}

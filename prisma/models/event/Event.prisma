@@ -1,0 +1,31 @@
+model Event {
+  id          String           @id @default(cuid())
+  handle      String
+  field       String?
+  title       String?
+  description Json? // markdown JSON
+  coverImage  String?
+  virtualLink String? // ex) zoom link
+  views       Int              @default(0)
+  timezone    String?
+  startAt     DateTime?
+  endAt       DateTime?
+  visibility  EventVisibility?
+  createdAt   DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  deletedAt   DateTime?        @db.Timestamp(6)
+
+  location             EventLocation?
+  setting              EventSetting?
+  tickets              EventTicket[]
+  hosts                EventHost[]
+  participants         EventParticipant[]
+  participantLabels    EventParticipantLabel[]
+  participantCurations EventParticipantCuration[]
+}
+
+enum EventVisibility {
+  LISTED // Discovery 페이지에 노출
+  PUBLIC // 모든 사용자들이 접근 가능함.
+  PRIVATE // 공유(초대)된 사용자들만 접근 가능함.
+}

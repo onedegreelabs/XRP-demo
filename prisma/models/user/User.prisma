@@ -1,0 +1,43 @@
+model User {
+  id           String          @id @default(cuid())
+  name         String
+  handle       String          @unique
+  avatar       String?
+  bio          String?
+  organization String?
+  jobTitle     String?
+  accessLevel  UserAccessLevel @default(FREE)
+  role         UserRole        @default(MEMBER)
+  createdAt    DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime        @default(now()) @updatedAt @db.Timestamp(6)
+  deletedAt    DateTime?       @db.Timestamp(6)
+
+  auth               Auth?
+  nonMemberAuth      NonMemberAuth?
+  location           UserLocation?
+  socials            UserSocial[]
+  thirdPartyAccounts ThirdPartyAccount[]
+  devices            UserDevice[]
+  policyAgreements   UserPolicyAgreement[]
+  supportRequests    SupportRequest[]
+  tags               UserTag[]
+  likes              Like[]                @relation("Like")
+  likedBy            Like[]                @relation("LikedBy")
+  participants       EventParticipant[]
+  eventHosts         EventHost[]
+
+  // This is the relation field in the Wallet model
+  wallet          UserWallet?
+  eventTicketNfts EventTicketNft[]
+}
+
+enum UserAccessLevel {
+  FREE
+  PRO
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  NON_MEMBER
+}

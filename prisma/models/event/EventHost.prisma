@@ -1,0 +1,30 @@
+model EventHost {
+  id               String                     @id @default(cuid())
+  email            String
+  accessLevel      EventHostAccessLevel
+  invitationStatus EventHostInvitationStatus?
+  listingEnabled   Boolean
+  createdAt        DateTime                   @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime                   @default(now()) @updatedAt @db.Timestamp(6)
+  invitedAt        DateTime?                  @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? // null이면 초대 응답대기중인 비회원 -> 응답하면 userId로 링크
+
+  @@unique([eventId, email]) // 이벤트 내에서 이메일은 유일해야 함.
+}
+
+enum EventHostInvitationStatus {
+  PENDING // 응답 대기중
+  ACCEPTED // 초대 수락됨 -> 이벤트 등록한 상태임
+  REJECTED // 초대 거절됨
+}
+
+enum EventHostAccessLevel {
+  OWNER // 이벤트 생성자
+  MANAGER // 이벤트 관리권한
+  NON_MANAGER // 이벤트 관리권한 없는 일반 참가자
+}

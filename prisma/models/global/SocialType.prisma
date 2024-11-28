@@ -1,0 +1,9 @@
+enum SocialType {
+  LINKEDIN
+  INSTAGRAM
+  GITHUB
+  TWITTER
+  YOUTUBE
+  NOTION
+  BLOG
+}

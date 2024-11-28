@@ -1,0 +1,7 @@
+export enum UncaughtExceptionEnum {
+  BAD_REQUEST = 'G99400',
+  UNAUTHORIZED = 'G99401',
+  FORBIDDEN = 'G99403',
+  NOT_FOUND = 'G99404',
+  INTERNAL_SERVER_ERROR = 'G99500',
+}

@@ -1,0 +1,21 @@
+model EventParticipantTicket {
+  id        String            @id @default(cuid())
+  status    EventTicketStatus @default(ACTIVE)
+  issuedAt  DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  participantId String           @unique
+
+  // 호스트가 실수로 삭제할 수 있기 때문에 일단 남겨둠.
+  ticket   EventTicket @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId String
+
+  @@unique([participantId, ticketId])
+}
+
+enum EventTicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}

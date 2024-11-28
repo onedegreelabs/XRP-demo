@@ -1,0 +1,19 @@
+model EventTicketNft {
+  id        String               @id @default(cuid())
+  nftId     String               @unique
+  uri       String
+  status    EventTicketNftStatus @default(ACTIVE)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @default(now())
+
+  ticket   EventTicket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId String?
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+}
+
+enum EventTicketNftStatus {
+  ACTIVE
+  USED
+}

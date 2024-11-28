@@ -1,0 +1,12 @@
+model Policy {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  required    Boolean
+  type        String   @unique
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp
+
+  users UserPolicyAgreement[]
+}

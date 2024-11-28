@@ -1,0 +1,21 @@
+model EventTicket {
+  id               String          @id @default(cuid())
+  type             EventTicketType @default(FREE) // FREE 타입은 name, description 수정 불가
+  name             String          @default("Standard")
+  description      String?
+  price            Int             @default(0)
+  capacity         Int             @default(-1) // -1 means unlimited
+  approvalRequired Boolean
+  salesStartAt     DateTime
+  salesEndAt       DateTime
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  nfts         EventTicketNft[]
+  participants EventParticipantTicket[]
+}
+
+enum EventTicketType {
+  FREE
+}

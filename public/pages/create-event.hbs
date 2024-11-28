@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glimpse</title>
+  <link rel="stylesheet" href="../styles/create-event.css">
+  <link rel="stylesheet" href="../styles/header.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+
+{{> header}}
+
+<div class="container">
+  <h2 class="form-title">Create Event</h2>
+  <form id="eventForm" class="event-form">
+    <label for="coverImage" class="form-label">Cover Image*</label>
+    <input type="file" id="coverImage" name="coverImage" class="form-input" accept="image/*" required>
+
+    <label for="title" class="form-label">Title*</label>
+    <input type="text" id="title" name="title" class="form-input" required placeholder="Enter event title">
+
+    <label for="field" class="form-label">Field*</label>
+    <select id="field" name="field" class="form-input" required>
+      <option value="">Select event type</option>
+      <option value="Conference">Conference</option>
+      <option value="Workshop">Workshop</option>
+      <option value="Webinar">Webinar</option>
+      <option value="Seminar">Seminar</option>
+      <option value="Meetup">Meetup</option>
+      <option value="Networking">Networking</option>
+      <option value="Product Launch">Product Launch</option>
+      <option value="Hackathon">Hackathon</option>
+      <option value="Concert">Concert</option>
+      <option value="Festival">Festival</option>
+      <option value="Web Development">Web Development</option>
+      <option value="Music Performance">Music Performance</option>
+      <option value="Art Exhibition">Art Exhibition</option>
+      <option value="Community Service">Community Service</option>
+      <option value="Career Fair">Career Fair</option>
+      <option value="Trade Show">Trade Show</option>
+      <option value="Lecture">Lecture</option>
+      <option value="Sports Event">Sports Event</option>
+      <option value="Fundraiser">Fundraiser</option>
+      <option value="Game Night">Game Night</option>
+      <option value="Retreat">Retreat</option>
+    </select>
+
+    <label for="description" class="form-label">Description*</label>
+    <textarea id="description" name="description" class="form-textarea" required placeholder="Enter event description"></textarea>
+
+    <label for="startAt" class="form-label">Start Date*</label>
+    <input type="datetime-local" id="startAt" name="startAt" class="form-input" required>
+
+    <label for="location" class="form-label">Location*</label>
+    <input type="text" id="location" name="location" class="form-input" required placeholder="Enter event location">
+
+    <label for="price" class="form-label">Ticket Price (XRP)*</label>
+    <input type="number" id="price" name="price" class="form-input" min="0" required placeholder="Enter ticket price">
+
+    <label for="capacity" class="form-label">Capacity*</label>
+    <input type="number" id="capacity" name="capacity" class="form-input" max="20" value="1" placeholder="Enter event capacity">
+
+
+    <button type="submit" class="form-button">Create Event</button>
+  </form>
+</div>
+
+<script src="../scripts/create-event.script.js"></script>
+<script src="../scripts/header.script.js"></script>
+</body>
+</html>

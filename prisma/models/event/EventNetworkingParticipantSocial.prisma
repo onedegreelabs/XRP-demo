@@ -1,0 +1,13 @@
+model EventNetworkingParticipantSocial {
+  id        String     @id @default(cuid())
+  type      SocialType
+  url       String
+  position  BigInt
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+
+  networkingParticipant   EventNetworkingParticipant @relation(fields: [networkingParticipantId], references: [id], onDelete: Cascade)
+  networkingParticipantId String
+
+  @@unique([networkingParticipantId, type])
+}

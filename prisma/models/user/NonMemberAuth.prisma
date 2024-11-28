@@ -1,0 +1,11 @@
+model NonMemberAuth {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  authCode    String    @unique
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  convertedAt DateTime  @db.Timestamp(6)
+  expiredAt   DateTime? @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}

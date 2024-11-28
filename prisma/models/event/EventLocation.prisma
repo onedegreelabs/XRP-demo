@@ -1,0 +1,17 @@
+// references: https://developers.google.com/maps/documentation/javascript/places
+model EventLocation {
+  id            String       @id @default(cuid())
+  placeId       String?
+  type          LocationType
+  country       String?
+  region        String? // 주(state) or 도(ex 경기도) or 대도시(특별시, 광역시)
+  city          String? // 주(state) or 도(ex 경기도)에 포함된 소도시
+  shortAddress  String? // 간단주소 (직접 or 자동입력) - manul 입력 시 저장되는 필드
+  fullAddress   String? // 전체주소 (자동입력)
+  detailAddress String? // 상세주소 (직접입력)
+  latitude      Float? //
+  longitude     Float?
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String @unique
+}

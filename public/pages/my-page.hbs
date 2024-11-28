@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glimpse</title>
+  <link rel="stylesheet" href="../styles/my-page.css">
+  <link rel="stylesheet" href="../styles/header.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+
+{{> header}}
+
+<div class="container">
+  <div class="profile-card"></div>
+
+  <div class="tabs">
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="wallet">My Wallet</button>
+      <button class="tab-btn" data-tab="events">My Events</button>
+    </div>
+    <div class="tab-contents">
+      <div class="tab-content active" id="wallet">
+        <div class="wallet-card">
+          <div class="wallet-top" style="display: flex; justify-content: center;"></div>
+          <p style="margin: 2px 0;">Transfer</p>
+          <div class="wallet-withdraw">
+            <input type="text" class="amount_input" placeholder="Amount">
+            <input type="text" class="address_input" placeholder="Destination">
+          </div>
+          <button class="withdraw-btn">
+            <div class="spinner" style="display: none;"></div>
+            <p class="withdraw-text">Withdraw</p>
+          </button>
+        </div>
+      </div>
+      <div class="tab-content" id="events">
+        <div id="event-list" class="event-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="popup" class="popup hidden">
+  <div class="popup-content"></div>
+</div>
+
+
+<script src="../scripts/header.script.js"></script>
+<script src="../scripts/my-page.script.js"></script>
+<script src="../scripts/logout.script.js"></script>
+<script src="https://kit.fontawesome.com/4b3fe600d9.js" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+model EventParticipant {
+  id                  String                              @id @default(cuid())
+  email               String // 참가자 이메일 (초대 용도)
+  role                EventParticipantRole // 참가자 뱃지
+  accessLevel         EventParticipantAccessLevel
+  registerationStatus EventParticipantRegistrationStatus? // 아직 초대에 응답하지 않으면 null
+  invitationStatus    EventParticipantInvitationStatus? // 초대한 참가자가 아니면 null
+  createdAt           DateTime                            @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime                            @default(now()) @updatedAt @db.Timestamp(6)
+  registeredAt        DateTime?                           @db.Timestamp(6) // 등록한 시간 (Pending or Approved)
+  checkedInAt         DateTime?                           @db.Timestamp(6) // 체크인한 시간 (Checked In)
+  exitedAt            DateTime?                           @db.Timestamp(6) // 참가자가 이벤트에서 나간 시간 (Cancelled or Rejected)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? // null이면 초대 응답대기중인 비회원 -> 응답하면 userId로 링크
+
+  label   EventParticipantLabel? @relation(fields: [labelId], references: [id], onDelete: SetNull)
+  labelId String?
+
+  networkingParticipant EventNetworkingParticipant?
+  ticket                EventParticipantTicket?
+  curations             EventParticipantCuration[]  @relation("Curation") // 어떤 참가자를 큐레이팅 했는가?
+  curatedBy             EventParticipantCuration[]  @relation("CuratedBy") // 누구에 의해 큐레이팅 되었는가?
+
+  @@unique([eventId, userId, labelId])
+}
+
+enum EventParticipantRole {
+  HOST
+  GUEST
+  SPEAKER
+}
+
+enum EventParticipantAccessLevel {
+  NON_MEMBER // 비회원
+  ACCESS_LOUNGE // 라운지 접근 가능
+  ACCESS_NETWORKING // 네트워킹 접근 가능
+}
+
+enum EventParticipantRegistrationStatus {
+  WAITLIST // 대기자명단에 올라감
+  PENDING // 참가 신청 대기
+  APPROVED // 참가 승인됨
+  REJECTED // 참가 거절됨
+  CHECKED_IN // 체크인됨
+  CANCELLED // 참가 취소됨
+}
+
+enum EventParticipantInvitationStatus {
+  PENDING // 응답 대기중
+  ACCEPTED // 초대 수락됨 -> 이벤트 등록한 상태임
+  REJECTED // 초대 거절됨
+}

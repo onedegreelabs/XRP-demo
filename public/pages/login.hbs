@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glimpse</title>
+  <link rel="stylesheet" href="../styles/login.css">
+  <link rel="stylesheet" href="../styles/header.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+
+{{> header}}
+
+<div class="container">
+  <!-- Initial Email Form -->
+  <div id="emailFormContainer">
+    <h1 class="email-form-title">Welcome to Glimpse</h1>
+
+    <form class="login-form" id="emailForm">
+      <input type="email" name="email" placeholder="you@email.com" required class="email-input">
+      <button type="submit" class="btn btn-email">Continue with email</button>
+    </form>
+  </div>
+
+  <!-- Confirmation Code Form (Initially Hidden) -->
+  <div id="confirmationCodeContainer" style="display: none;">
+    <h1 class="confirm-title">Enter confirmation code</h1>
+    <p class="subtitle">Enter the 6-digit code sent</p>
+
+    <div class="code-inputs" id="codeInputs">
+      <input type="text" maxlength="1" class="code-input">
+      <input type="text" maxlength="1" class="code-input">
+      <input type="text" maxlength="1" class="code-input">
+      <input type="text" maxlength="1" class="code-input">
+      <input type="text" maxlength="1" class="code-input">
+      <input type="text" maxlength="1" class="code-input">
+    </div>
+
+    <p class="resend" id="resend">⟳ Resend code <span id="timer">30s</span></p>
+
+    <button class="verify-btn" id="confirmButton" disabled>Correct</button>
+  </div>
+
+  <!-- Sign Up Form (Initially Hidden) -->
+  <div id="signupFormContainer" style="display: none;">
+    <h1 class="signup-title">Create your account</h1>
+    <form id="signupForm">
+      <label for="name" class="name-label">Name</label>
+      <input type="text" name="name" placeholder="Your Name" required class="name-input">
+      <button type="submit" class="btn btn-signup">
+        <div class="spinner" style="display: none;"></div>
+        <p class="signup-text">Sign up</p>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script src="../scripts/login.script.js"></script>
+<script src="../scripts/header.script.js"></script>
+</body>
+</html>

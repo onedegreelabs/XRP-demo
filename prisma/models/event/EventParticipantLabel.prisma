@@ -1,0 +1,13 @@
+model EventParticipantLabel {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  participant EventParticipant[]
+
+  @@unique([eventId, name])
+}

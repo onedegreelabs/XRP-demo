@@ -1,0 +1,11 @@
+model Like {
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], name: "Like", onDelete: Cascade)
+  userId String
+
+  targetUser   User   @relation(fields: [targetUserId], references: [id], name: "LikedBy", onDelete: Cascade)
+  targetUserId String
+
+  @@id([userId, targetUserId])
+}

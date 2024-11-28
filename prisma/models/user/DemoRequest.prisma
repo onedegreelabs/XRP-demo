@@ -1,0 +1,18 @@
+model DemoRequest {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  company   String
+  jobTitle  String
+  message   String
+  status    DemoRequestStatus @default(OPEN)
+  createdAt DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+}
+
+enum DemoRequestStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}

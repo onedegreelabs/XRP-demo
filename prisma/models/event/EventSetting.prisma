@@ -1,0 +1,10 @@
+model EventSetting {
+  id                   String  @id @default(cuid())
+  registrationEnabled  Boolean @default(true)
+  registrationCapacity Int
+  waitlistEnabled      Boolean @default(false)
+  waitlitistCapacity   Int     @default(-1) // -1 means unlimited
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String @unique
+}

@@ -1,0 +1,17 @@
+model EventParticipantCuration {
+  id        String   @id @default(cuid())
+  comment   String?
+  score     Float?
+  curatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], name: "Curation", onDelete: Cascade)
+  participantId String
+
+  curatedParticipant   EventParticipant? @relation(fields: [curatedParticipantId], references: [id], name: "CuratedBy", onDelete: Cascade)
+  curatedParticipantId String?
+
+  @@unique([eventId, participantId, curatedParticipantId, curatedAt])
+}

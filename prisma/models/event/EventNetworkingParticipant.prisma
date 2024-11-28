@@ -1,0 +1,14 @@
+model EventNetworkingParticipant {
+  id           String   @id @default(cuid())
+  bio          String?
+  organization String?
+  jobTitle     String?
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  participantId String           @unique
+
+  tags    EventNetworkingParticipantTag[]
+  socials EventNetworkingParticipantSocial[]
+}

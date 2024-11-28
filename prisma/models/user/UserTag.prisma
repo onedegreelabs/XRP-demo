@@ -1,0 +1,12 @@
+model UserTag {
+  position BigInt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId String
+
+  @@id([userId, tagId])
+  @@unique([userId, position])
+}

@@ -1,0 +1,21 @@
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  type        CategoryType
+  position    BigInt
+  description String?
+  createdAt   DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+
+  parent   Category? @relation(fields: [parentId], references: [id], name: "CategoryToCategory", onDelete: Restrict)
+  parentId String?
+
+  children Category[] @relation("CategoryToCategory")
+
+  @@unique([type, position])
+}
+
+enum CategoryType {
+  EVENT_TYPE
+  EVENT_FIELD
+}

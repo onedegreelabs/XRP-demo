@@ -1,0 +1,15 @@
+// references: https://developers.google.com/maps/documentation/javascript/places
+model UserLocation {
+  id           String       @id @default(cuid())
+  type         LocationType
+  country      String?
+  region       String? // 주(state) or 도(ex 경기도) or 대도시(특별시, 광역시)
+  city         String? // 주(state) or 도(ex 경기도)에 포함된 소도시
+  shortAddress String? // 간단주소 (직접 or 자동입력) - manul 입력 시 저장되는 필드
+  fullAddress  String? // 전체주소 (자동입력)
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
