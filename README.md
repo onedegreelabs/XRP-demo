@@ -105,7 +105,7 @@ REFRESH_TOKEN_SECRET = 'xrp-demo-refresh-token-secret'
 CREATE_USER_TOKEN_SECRET = 'xrp-demo-create-user-token-secret'
 
 #TTL(seconds)
-ACCESS_TOKEN_TTL = 2592000          #30 minutes
+ACCESS_TOKEN_TTL = 1800          #30 minutes
 REFRESH_TOKEN_TTL = 2592000      #1 month
 CREATE_USER_TOKEN_TTL = 1800         #30 minutes
 
