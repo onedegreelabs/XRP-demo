@@ -1,6 +1,6 @@
-# Glimpse <> XRP
+# XRP Integration in Glimpse
 
-Glimpse is ~~
+글림스에 대한 간단한 설명과 왜 XRP를 사용하는지에 대해서 2~3줄 간단하게 작성하면 좋을듯.
 
 ### About Code Repository
 This repository was forked from an existing product that was under development prior to starting the demo project.
