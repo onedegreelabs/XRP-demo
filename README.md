@@ -20,7 +20,7 @@ In addition, AWS S3 was used to implement the infrastructure for managing NFT me
 - [Redis](https://redis.io/docs/latest/) - Workers for background processing
 
 ### System Design Diagram
-![Architecture](https://cdn.glimpse.rsvp/users/avatars/be667ed7-ba3d-49f3-a32b-348b93dca153.png)
+![Architecture](https://cdn.glimpse.rsvp/users/avatars/ea97962a-b639-4583-8a4e-1d1a40f3c865.png)
 
 ### Detailed explanation of XRP usage
 #### 1. Create a Wallet
