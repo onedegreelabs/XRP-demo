@@ -6,7 +6,7 @@ fetch('/events?take=10')
     const events = data.data.items; // Assuming the data is directly an array of events
 
     // Sort events by startAt
-    events.sort((a, b) => new Date(b.startAt) - new Date(a.startAt));
+    events.sort((a, b) => new Date(a.startAt) - new Date(b.startAt));
 
     const eventList = document.getElementById('event-list');
 
