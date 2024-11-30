@@ -207,7 +207,7 @@ function withdrawXRP() {
       // 스피너 숨기기
       spinner.style.display = 'none';
       withdrawText.style.display = 'block';
-      window.location.href = '/my';
+      window.location.href = '/me';
       clearTimeout(timeoutId);
     });
 }
