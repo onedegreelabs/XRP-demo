@@ -124,6 +124,9 @@ When the server is running, access this URL(http://localhost:8080).
 ### User Flow
 ![User Flow](https://cdn.glimpse.rsvp/users/avatars/a6b83d67-6fbc-4f8c-96e8-237598d0a188.png)
 
+### Demo Video
+[Click this link to watch the demo video.](https://www.loom.com/share/8523233d5d1e4a078f04ca44422714b2?sid=80cee80d-e2c2-45f5-8a9c-6bb101579c49)
+
 ### References
 - [How to mint and sell NFTs](https://xrpl.org/docs/tutorials/javascript/nfts)
 - [How to transfer XRP](https://xrpl.org/docs/tutorials/javascript/nfts/transfer-nfts)
